@@ -51,6 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             die("Error: 이 카테고리에 자산을 등록할 권한이 없습니다.");
         }
 
+        // Uniqueness check
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM assets WHERE serial_number = ?");
+        $stmt->execute([$serial_number]);
+        if ($stmt->fetchColumn() > 0) {
+            die("Error: 이미 가입된 자산번호입니다.");
+        }
+
         try {
             $stmt = $pdo->prepare("INSERT INTO assets (model_name, serial_number, category_id, ip_address, vlan_info, location, status, importance, risk_level, manager_name, introduction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$model_name, $serial_number, $category_id, $ip_address, $vlan_info, $location, $status, $importance, $risk_level, $manager_name, $introduction_date]);
@@ -77,6 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_category_name = getCategoryName($pdo, $category_id);
         if (!canEditAsset($new_category_name)) {
             die("Error: 변경하려는 카테고리에 대한 권한이 없습니다.");
+        }
+
+        // Uniqueness check
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM assets WHERE serial_number = ? AND id != ?");
+        $stmt->execute([$serial_number, $id]);
+        if ($stmt->fetchColumn() > 0) {
+            die("Error: 이미 가입된 자산번호입니다.");
         }
 
         try {
