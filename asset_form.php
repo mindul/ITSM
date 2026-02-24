@@ -86,7 +86,8 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
                     <label class="form-label">중요도 <span class="text-danger">*</span></label>
                     <select name="importance" class="form-select" required>
                         <option value="High" <?php echo $asset['importance'] == 'High' ? 'selected' : ''; ?>>High</option>
-                        <option value="Medium" <?php echo $asset['importance'] == 'Medium' ? 'selected' : ''; ?>>Medium</option>
+                        <option value="Medium" <?php echo $asset['importance'] == 'Medium' ? 'selected' : ''; ?>>Medium
+                        </option>
                         <option value="Low" <?php echo $asset['importance'] == 'Low' ? 'selected' : ''; ?>>Low</option>
                     </select>
                 </div>
@@ -94,7 +95,8 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
                     <label class="form-label">위험평가 <span class="text-danger">*</span></label>
                     <select name="risk_level" class="form-select" required>
                         <option value="High" <?php echo $asset['risk_level'] == 'High' ? 'selected' : ''; ?>>High</option>
-                        <option value="Medium" <?php echo $asset['risk_level'] == 'Medium' ? 'selected' : ''; ?>>Medium</option>
+                        <option value="Medium" <?php echo $asset['risk_level'] == 'Medium' ? 'selected' : ''; ?>>Medium
+                        </option>
                         <option value="Low" <?php echo $asset['risk_level'] == 'Low' ? 'selected' : ''; ?>>Low</option>
                     </select>
                 </div>
@@ -132,5 +134,30 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const serialInput = document.querySelector('input[name="serial_number"]');
+        const assetId = <?php echo $id; ?>;
+
+        if (serialInput) {
+            serialInput.addEventListener('blur', function () {
+                const serial = this.value.trim();
+                if (serial === '') return;
+
+                fetch(`check_serial.php?serial=${encodeURIComponent(serial)}&exclude_id=${assetId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            alert('이미 등록된 자산번호입니다. 다른 번호를 입력해 주세요.');
+                            this.value = '';
+                            setTimeout(() => this.focus(), 10);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        }
+    });
+</script>
 
 <?php include 'includes/footer.php'; ?>
