@@ -101,7 +101,7 @@ include 'includes/header.php';
                                 </small></td>
                             <td>
                                 <?php
-                                $tasks = json_decode($u['assigned_tasks'], true);
+                                $tasks = $u['assigned_tasks'] ? json_decode($u['assigned_tasks'], true) : [];
                                 if ($tasks) {
                                     foreach ($tasks as $task) {
                                         $badge_class = ($task === '모니터링') ? 'bg-light text-dark border' : 'bg-info text-dark';
