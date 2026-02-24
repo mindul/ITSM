@@ -98,15 +98,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .task-option {
             background: #f8f9fa;
             border: 1px solid #ddd;
-            padding: 10px 15px;
+            padding: 10px 15px 10px 40px;
             border-radius: 8px;
             margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            width: fit-content;
-            min-width: 140px;
+            width: 100%;
         }
 
         .task-option:hover {
@@ -159,31 +158,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-6">
                             <div class="form-check task-option">
                                 <input class="form-check-input" type="checkbox" name="tasks[]" value="서버" id="task1">
-                                <label class="form-check-label" for="task1">서버</label>
+                                <label class="form-check-label ms-3" for="task1">서버</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-check task-option">
                                 <input class="form-check-input" type="checkbox" name="tasks[]" value="네트워크장비" id="task2">
-                                <label class="form-check-label" for="task2">네트워크장비</label>
+                                <label class="form-check-label ms-3" for="task2">네트워크장비</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-check task-option">
                                 <input class="form-check-input" type="checkbox" name="tasks[]" value="정보보호시스템" id="task3">
-                                <label class="form-check-label" for="task3">정보보호시스템</label>
+                                <label class="form-check-label ms-3" for="task3">정보보호시스템</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-check task-option">
                                 <input class="form-check-input" type="checkbox" name="tasks[]" value="기타장비" id="task4">
-                                <label class="form-check-label" for="task4">기타장비</label>
+                                <label class="form-check-label ms-3" for="task4">기타장비</label>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-check task-option">
                                 <input class="form-check-input" type="checkbox" name="tasks[]" value="모니터링" id="task5">
-                                <label class="form-check-label" for="task5">모니터링 (일반사용자)</label>
+                                <label class="form-check-label ms-3" for="task5">모니터링 (일반사용자)</label>
                             </div>
                         </div>
                     </div>

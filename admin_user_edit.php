@@ -103,8 +103,8 @@ include 'includes/header.php';
                     <div class="mb-3">
                         <label class="form-label fw-bold">권한 설정</label>
                         <select name="role" class="form-select" <?php echo $user['username'] === 'kadmin' ? 'disabled' : ''; ?>>
-                            <option value="SuperAdmin" <?php echo $user['role'] === 'SuperAdmin' ? 'selected' : ''; ?>
-                                >최고관리자</option>
+                            <option value="SuperAdmin" <?php echo $user['role'] === 'SuperAdmin' ? 'selected' : ''; ?>>
+                                최고관리자</option>
                             <option value="Manager" <?php echo $user['role'] === 'Manager' ? 'selected' : ''; ?>>중간관리자
                             </option>
                             <option value="User" <?php echo $user['role'] === 'User' ? 'selected' : ''; ?>>일반사용자</option>
@@ -125,10 +125,10 @@ include 'includes/header.php';
                                 $checked = in_array($opt, $current_tasks) ? 'checked' : '';
                                 ?>
                                 <div class="col-6">
-                                    <div class="form-check p-2 border rounded bg-light px-4">
+                                    <div class="form-check p-2 border rounded bg-light ps-5 pe-3">
                                         <input class="form-check-input" type="checkbox" name="tasks[]"
                                             value="<?php echo h($opt); ?>" id="<?php echo $id; ?>" <?php echo $checked; ?>>
-                                        <label class="form-check-label ms-1" for="<?php echo $id; ?>">
+                                        <label class="form-check-label ms-3" for="<?php echo $id; ?>">
                                             <?php echo h($opt); ?>
                                         </label>
                                     </div>
