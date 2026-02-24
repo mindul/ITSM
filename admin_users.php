@@ -93,6 +93,7 @@ include 'includes/header.php';
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
+                        <th class="text-center">No.</th>
                         <th>아이디</th>
                         <th>성명</th>
                         <th>가입일</th>
@@ -104,8 +105,12 @@ include 'includes/header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($users as $u): ?>
+                    <?php
+                    $rowNo = $totalUsers - $offset;
+                    foreach ($users as $u):
+                        ?>
                         <tr <?php echo $u['username'] === 'kadmin' ? 'class="table-light"' : ''; ?>>
+                            <td class="text-center text-muted small"><?php echo $rowNo--; ?></td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-user-circle fa-2x text-muted me-2"></i>
