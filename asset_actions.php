@@ -39,6 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $vlan_info = $_POST['vlan_info'];
     $location = $_POST['location'];
     $status = $_POST['status'];
+    $importance = $_POST['importance'] ?? 'Medium';
+    $risk_level = $_POST['risk_level'] ?? 'Medium';
     $manager_name = $_POST['manager_name'];
     $introduction_date = $_POST['introduction_date'];
 
@@ -50,8 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         try {
-            $stmt = $pdo->prepare("INSERT INTO assets (model_name, serial_number, category_id, ip_address, vlan_info, location, status, manager_name, introduction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$model_name, $serial_number, $category_id, $ip_address, $vlan_info, $location, $status, $manager_name, $introduction_date]);
+            $stmt = $pdo->prepare("INSERT INTO assets (model_name, serial_number, category_id, ip_address, vlan_info, location, status, importance, risk_level, manager_name, introduction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$model_name, $serial_number, $category_id, $ip_address, $vlan_info, $location, $status, $importance, $risk_level, $manager_name, $introduction_date]);
             $asset_id = $pdo->lastInsertId();
 
             // Log History
@@ -78,8 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         try {
-            $stmt = $pdo->prepare("UPDATE assets SET model_name=?, serial_number=?, category_id=?, ip_address=?, vlan_info=?, location=?, status=?, manager_name=?, introduction_date=? WHERE id=?");
-            $stmt->execute([$model_name, $serial_number, $category_id, $ip_address, $vlan_info, $location, $status, $manager_name, $introduction_date, $id]);
+            $stmt = $pdo->prepare("UPDATE assets SET model_name=?, serial_number=?, category_id=?, ip_address=?, vlan_info=?, location=?, status=?, importance=?, risk_level=?, manager_name=?, introduction_date=? WHERE id=?");
+            $stmt->execute([$model_name, $serial_number, $category_id, $ip_address, $vlan_info, $location, $status, $importance, $risk_level, $manager_name, $introduction_date, $id]);
 
             // Log History
             $stmt = $pdo->prepare("INSERT INTO history_logs (asset_id, change_type, details, worker_name) VALUES (?, '수정', '수정됨: $model_name', ?)");

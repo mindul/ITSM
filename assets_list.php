@@ -127,6 +127,8 @@ $assets = $stmt->fetchAll();
                         <th>IP 주소</th>
                         <th>위치</th>
                         <th>상태</th>
+                        <th>중요도</th>
+                        <th>위험평가</th>
                         <th>관리</th>
                     </tr>
                 </thead>
@@ -145,6 +147,18 @@ $assets = $stmt->fetchAll();
                                 <td><?php echo h($asset['location'] ?: '-'); ?></td>
                                 <td><span
                                         class="badge <?php echo getStatusBadge($asset['status']); ?>"><?php echo h($asset['status']); ?></span>
+                                </td>
+                                <td>
+                                    <?php
+                                    $impColor = $asset['importance'] === 'High' ? 'text-danger' : ($asset['importance'] === 'Medium' ? 'text-warning' : 'text-success');
+                                    echo "<span class='fw-bold $impColor'>{$asset['importance']}</span>";
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    $riskColor = $asset['risk_level'] === 'High' ? 'text-danger' : ($asset['risk_level'] === 'Medium' ? 'text-warning' : 'text-success');
+                                    echo "<span class='fw-bold $riskColor'>{$asset['risk_level']}</span>";
+                                    ?>
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">

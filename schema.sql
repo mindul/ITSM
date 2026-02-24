@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS `assets` (
   `vlan_info` varchar(50) DEFAULT NULL,
   `location` varchar(100) DEFAULT NULL,
   `status` enum('사용중','재고','폐기','수리중') DEFAULT '재고',
+  `importance` enum('High','Medium','Low') DEFAULT 'Medium',
+  `risk_level` enum('High','Medium','Low') DEFAULT 'Medium',
   `manager_name` varchar(50) DEFAULT NULL,
   `introduction_date` date DEFAULT NULL,
   `expiration_date` date DEFAULT NULL,

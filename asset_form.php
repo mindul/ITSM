@@ -12,6 +12,8 @@ $asset = [
     'vlan_info' => '',
     'location' => '',
     'status' => '재고',
+    'importance' => 'Medium',
+    'risk_level' => 'Medium',
     'manager_name' => '',
     'introduction_date' => date('Y-m-d')
 ];
@@ -78,6 +80,22 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
                         <option <?php echo $asset['status'] == '재고' ? 'selected' : ''; ?>>재고</option>
                         <option <?php echo $asset['status'] == '수리중' ? 'selected' : ''; ?>>수리중</option>
                         <option <?php echo $asset['status'] == '폐기' ? 'selected' : ''; ?>>폐기</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">중요도 <span class="text-danger">*</span></label>
+                    <select name="importance" class="form-select" required>
+                        <option value="High" <?php echo $asset['importance'] == 'High' ? 'selected' : ''; ?>>High</option>
+                        <option value="Medium" <?php echo $asset['importance'] == 'Medium' ? 'selected' : ''; ?>>Medium</option>
+                        <option value="Low" <?php echo $asset['importance'] == 'Low' ? 'selected' : ''; ?>>Low</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">위험평가 <span class="text-danger">*</span></label>
+                    <select name="risk_level" class="form-select" required>
+                        <option value="High" <?php echo $asset['risk_level'] == 'High' ? 'selected' : ''; ?>>High</option>
+                        <option value="Medium" <?php echo $asset['risk_level'] == 'Medium' ? 'selected' : ''; ?>>Medium</option>
+                        <option value="Low" <?php echo $asset['risk_level'] == 'Low' ? 'selected' : ''; ?>>Low</option>
                     </select>
                 </div>
                 <div class="col-md-6">

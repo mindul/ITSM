@@ -69,6 +69,24 @@ $logs = $stmt->fetchAll();
                             </span></td>
                     </tr>
                     <tr>
+                        <th class="bg-light">중요도</th>
+                        <td>
+                            <?php
+                            $impColor = $asset['importance'] === 'High' ? 'text-danger' : ($asset['importance'] === 'Medium' ? 'text-warning' : 'text-success');
+                            echo "<span class='fw-bold $impColor'>" . h($asset['importance']) . "</span>";
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">위험평가</th>
+                        <td>
+                            <?php
+                            $riskColor = $asset['risk_level'] === 'High' ? 'text-danger' : ($asset['risk_level'] === 'Medium' ? 'text-warning' : 'text-success');
+                            echo "<span class='fw-bold $riskColor'>" . h($asset['risk_level']) . "</span>";
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
                         <th class="bg-light">IP 주소</th>
                         <td><code><?php echo h($asset['ip_address'] ?: '-'); ?></code></td>
                     </tr>
