@@ -26,6 +26,7 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'];
+    $name = trim($_POST['name']);
     $tasks = isset($_POST['tasks']) ? $_POST['tasks'] : [];
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
@@ -37,10 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            $sql = "UPDATE users SET role = ?, assigned_tasks = ? WHERE id = ?";
+            $sql = "UPDATE users SET role = ?, name = ?, assigned_tasks = ? WHERE id = ?";
             $assigned_tasks_json = json_encode($tasks, JSON_UNESCAPED_UNICODE);
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$role, $assigned_tasks_json, $userId]);
+            $stmt->execute([$role, $name, $assigned_tasks_json, $userId]);
 
             if ($new_password !== '') {
                 $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
@@ -99,6 +100,12 @@ include 'includes/header.php';
                     </div>
 
                     <hr>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">성명</label>
+                        <input type="text" name="name" class="form-control" value="<?php echo h($user['name']); ?>"
+                            required>
+                    </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">권한 설정</label>

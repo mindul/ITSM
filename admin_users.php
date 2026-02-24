@@ -42,17 +42,33 @@ if (isset($_GET['action'])) {
     }
 }
 
-// Fetch Users
-$users = $pdo->query("SELECT * FROM users ORDER BY created_at DESC")->fetchAll();
+// Pagination settings
+$limit = 10;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+if ($page < 1)
+    $page = 1;
+$offset = ($page - 1) * $limit;
+
+// Fetch Total Count
+$totalUsers = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+$totalPages = ceil($totalUsers / $limit);
+
+// Fetch Users with Limit
+$stmt = $pdo->prepare("SELECT * FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?");
+$stmt->bindValue(1, $limit, PDO::PARAM_INT);
+$stmt->bindValue(2, $offset, PDO::PARAM_INT);
+$stmt->execute();
+$users = $stmt->fetchAll();
 
 include 'includes/header.php';
 ?>
 
 <div class="pt-3 pb-2 mb-4 border-bottom d-flex justify-content-between align-items-center">
     <h1 class="h2"><i class="fas fa-users-cog me-2 text-primary"></i>계정 관리</h1>
-    <span class="badge bg-secondary">총
-        <?php echo count($users); ?>명
-    </span>
+    <div class="d-flex align-items-center">
+        <span class="badge bg-secondary me-3">총 <?php echo $totalUsers; ?>명</span>
+        <a href="admin_user_create.php" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> 신규 등록</a>
+    </div>
 </div>
 
 <?php if ($msg): ?>
@@ -78,7 +94,9 @@ include 'includes/header.php';
                 <thead class="table-light">
                     <tr>
                         <th>아이디</th>
+                        <th>성명</th>
                         <th>가입일</th>
+                        <th>최근접속일</th>
                         <th>담당업무</th>
                         <th>권한</th>
                         <th>상태</th>
@@ -96,8 +114,14 @@ include 'includes/header.php';
                                     </strong>
                                 </div>
                             </td>
+                            <td>
+                                <?php echo h($u['name'] ?: '-'); ?>
+                            </td>
                             <td><small class="text-muted">
                                     <?php echo h($u['created_at']); ?>
+                                </small></td>
+                            <td><small class="text-muted">
+                                    <?php echo $u['last_login'] ? h($u['last_login']) : '<span class="text-danger">기록 없음</span>'; ?>
                                 </small></td>
                             <td>
                                 <?php
@@ -155,6 +179,29 @@ include 'includes/header.php';
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        <?php if ($totalPages > 1): ?>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $page - 1; ?>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?php echo $page == $i ? 'active' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $page + 1; ?>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        <?php endif; ?>
     </div>
 </div>
 

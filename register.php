@@ -8,11 +8,12 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
+    $name = trim($_POST['name']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $tasks = isset($_POST['tasks']) ? $_POST['tasks'] : [];
 
-    if (empty($username) || empty($password)) {
+    if (empty($username) || empty($name) || empty($password)) {
         $error = "모든 필드를 입력해주세요.";
     } elseif ($password !== $confirm_password) {
         $error = "비밀번호가 일치하지 않습니다.";
@@ -39,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $assigned_tasks_json = json_encode($tasks, JSON_UNESCAPED_UNICODE);
 
-            $stmt = $pdo->prepare("INSERT INTO users (username, password, role, is_approved, assigned_tasks) VALUES (?, ?, ?, 0, ?)");
-            if ($stmt->execute([$username, $hashed_password, $role, $assigned_tasks_json])) {
+            $stmt = $pdo->prepare("INSERT INTO users (username, name, password, role, is_approved, assigned_tasks) VALUES (?, ?, ?, ?, 0, ?)");
+            if ($stmt->execute([$username, $name, $hashed_password, $role, $assigned_tasks_json])) {
                 $success = "가입 신청이 완료되었습니다. 관리자 승인 후 로그인이 가능합니다.";
                 // Redirect after a short delay or show message
                 header("Refresh: 3; url=index.php");
@@ -150,6 +151,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="mb-3">
                     <label class="form-label fw-bold">비밀번호 확인</label>
                     <input type="password" name="confirm_password" class="form-control" placeholder="비밀번호 확인" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">성명</label>
+                    <input type="text" name="name" class="form-control" placeholder="성명 입력" required>
                 </div>
 
                 <div class="mb-4">

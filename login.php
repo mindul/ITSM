@@ -18,6 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($password, $user['password'])) {
             if ($user['is_approved'] == 1) {
+                // Update last login time
+                $updateStmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
+                $updateStmt->execute([$user['id']]);
+
                 loginUser($user);
                 header("Location: dashboard.php");
                 exit;
