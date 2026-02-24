@@ -23,14 +23,52 @@ function requireLogin()
 }
 
 /**
- * Require Admin role
+ * Check if user is SuperAdmin
  */
-function requireAdmin()
+function isSuperAdmin()
+{
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'SuperAdmin';
+}
+
+/**
+ * Require SuperAdmin role
+ */
+function requireSuperAdmin()
 {
     requireLogin();
-    if ($_SESSION['role'] !== 'Admin') {
-        die("Unauthorized access. Admin privileges required.");
+    if (!isSuperAdmin()) {
+        die("Unauthorized access. SuperAdmin privileges required.");
     }
+}
+
+/**
+ * Check if user has permission for a specific category
+ */
+function hasCategoryPermission($category_name)
+{
+    if (!isLoggedIn())
+        return false;
+
+    // SuperAdmin has access to everything
+    if (isSuperAdmin())
+        return true;
+
+    // If Manager, check assigned tasks
+    if ($_SESSION['role'] === 'Manager') {
+        $tasks = $_SESSION['assigned_tasks'] ?? [];
+        return in_array($category_name, $tasks);
+    }
+
+    // General Users have no write/delete permissions
+    return false;
+}
+
+/**
+ * Check if user can edit/delete assets in a specific category
+ */
+function canEditAsset($category_name)
+{
+    return hasCategoryPermission($category_name);
 }
 
 /**
@@ -41,6 +79,15 @@ function loginUser($user)
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['username'] = $user['username'];
     $_SESSION['role'] = $user['role'];
+
+    // Parse assigned tasks
+    $tasks = [];
+    if (!empty($user['assigned_tasks'])) {
+        $tasks = json_decode($user['assigned_tasks'], true);
+        if (!is_array($tasks))
+            $tasks = [];
+    }
+    $_SESSION['assigned_tasks'] = $tasks;
 }
 
 /**

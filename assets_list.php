@@ -60,7 +60,9 @@ $assets = $stmt->fetchAll();
 
 <div class="pt-3 pb-2 mb-3 border-bottom d-flex justify-content-between align-items-center">
     <h1 class="h2">자산 목록</h1>
-    <a href="asset_form.php" class="btn btn-primary"><i class="fas fa-plus me-2"></i>신규 자산 등록</a>
+    <?php if (isSuperAdmin() || (!empty($_SESSION['assigned_tasks']) && array_diff($_SESSION['assigned_tasks'], ['모니터링']))): ?>
+        <a href="asset_form.php" class="btn btn-primary"><i class="fas fa-plus me-2"></i>신규 자산 등록</a>
+    <?php endif; ?>
 </div>
 
 <?php if (isset($_GET['msg'])): ?>
@@ -148,10 +150,12 @@ $assets = $stmt->fetchAll();
                                     <div class="btn-group btn-group-sm">
                                         <a href="asset_view.php?id=<?php echo $asset['id']; ?>" class="btn btn-outline-primary"
                                             title="상세보기"><i class="fas fa-eye"></i></a>
-                                        <a href="asset_form.php?id=<?php echo $asset['id']; ?>"
-                                            class="btn btn-outline-secondary" title="수정"><i class="fas fa-edit"></i></a>
-                                        <button class="btn btn-outline-danger delete-btn" data-id="<?php echo $asset['id']; ?>"
-                                            title="삭제"><i class="fas fa-trash"></i></button>
+                                        <?php if (canEditAsset($asset['category_name'])): ?>
+                                            <a href="asset_form.php?id=<?php echo $asset['id']; ?>"
+                                                class="btn btn-outline-secondary" title="수정"><i class="fas fa-edit"></i></a>
+                                            <button class="btn btn-outline-danger delete-btn" data-id="<?php echo $asset['id']; ?>"
+                                                title="삭제"><i class="fas fa-trash"></i></button>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
@@ -167,7 +171,7 @@ $assets = $stmt->fetchAll();
                 <ul class="pagination justify-content-center">
                     <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
                         <a class="page-link"
-                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>">이전</a>
+                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>">이전</a>
                     </li>
                     <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                         <li class="page-item <?php echo $page == $i ? 'active' : ''; ?>">

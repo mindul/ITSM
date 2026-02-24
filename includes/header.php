@@ -61,29 +61,52 @@ requireLogin();
             <nav class="col-md-2 d-none d-md-block sidebar">
                 <div class="position-sticky pt-3">
                     <div class="text-center mb-4 px-3">
-                        <div class="p-2 border border-secondary rounded bg-dark">
-                            <i class="fas fa-user-circle me-1"></i> <?php echo h($_SESSION['username']); ?> 
-                            <span class="badge bg-info ms-1"><?php echo h($_SESSION['role']); ?></span>
-                        </div>
+                        <?php if (isSuperAdmin()): ?>
+                            <a href="admin_users.php" class="text-decoration-none">
+                                <div class="p-2 border border-primary rounded bg-dark mb-2">
+                                    <i class="fas fa-user-shield text-primary me-1"></i> <span
+                                        class="text-white">kadmin</span>
+                                    <span class="badge bg-danger ms-1">최고관리자</span>
+                                </div>
+                            </a>
+                        <?php else: ?>
+                            <div class="p-2 border border-secondary rounded bg-dark">
+                                <i class="fas fa-user-circle me-1"></i> <?php echo h($_SESSION['username']); ?>
+                                <span class="badge bg-info ms-1">
+                                    <?php
+                                    if ($_SESSION['role'] === 'Manager')
+                                        echo '중간관리자';
+                                    elseif ($_SESSION['role'] === 'User')
+                                        echo '일반사용자';
+                                    else
+                                        echo h($_SESSION['role']);
+                                    ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>" href="dashboard.php">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
+                                href="dashboard.php">
                                 <i class="fas fa-tachometer-alt me-2"></i> 대시보드
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'assets_list.php' ? 'active' : ''; ?>" href="assets_list.php">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'assets_list.php' ? 'active' : ''; ?>"
+                                href="assets_list.php">
                                 <i class="fas fa-boxes me-2"></i> 자산 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'network.php' ? 'active' : ''; ?>" href="network.php">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'network.php' ? 'active' : ''; ?>"
+                                href="network.php">
                                 <i class="fas fa-project-diagram me-2"></i> 네트워크 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>" href="history.php">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>"
+                                href="history.php">
                                 <i class="fas fa-history me-2"></i> 변경 이력
                             </a>
                         </li>

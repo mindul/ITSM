@@ -7,6 +7,30 @@ requireLogin();
 
 $action = $_REQUEST['action'] ?? '';
 
+/**
+ * Helper to get category name from ID
+ */
+function getCategoryName($pdo, $category_id)
+{
+    if (!$category_id)
+        return '';
+    $stmt = $pdo->prepare("SELECT name FROM categories WHERE id = ?");
+    $stmt->execute([$category_id]);
+    return $stmt->fetchColumn() ?: '';
+}
+
+/**
+ * Helper to get category name from asset ID
+ */
+function getCategoryNameByAsset($pdo, $asset_id)
+{
+    if (!$asset_id)
+        return '';
+    $stmt = $pdo->prepare("SELECT c.name FROM assets a JOIN categories c ON a.category_id = c.id WHERE a.id = ?");
+    $stmt->execute([$asset_id]);
+    return $stmt->fetchColumn() ?: '';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $model_name = $_POST['model_name'];
     $serial_number = $_POST['serial_number'];
@@ -19,6 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $introduction_date = $_POST['introduction_date'];
 
     if ($action === 'create') {
+        // Permission check
+        $category_name = getCategoryName($pdo, $category_id);
+        if (!canEditAsset($category_name)) {
+            die("Error: 이 카테고리에 자산을 등록할 권한이 없습니다.");
+        }
+
         try {
             $stmt = $pdo->prepare("INSERT INTO assets (model_name, serial_number, category_id, ip_address, vlan_info, location, status, manager_name, introduction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$model_name, $serial_number, $category_id, $ip_address, $vlan_info, $location, $status, $manager_name, $introduction_date]);
@@ -34,6 +64,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($action === 'update') {
         $id = $_POST['id'];
+
+        // Permission check (existing category)
+        $old_category_name = getCategoryNameByAsset($pdo, $id);
+        if (!canEditAsset($old_category_name)) {
+            die("Error: 이 자산을 수정할 권한이 없습니다.");
+        }
+
+        // Permission check (new category if changed)
+        $new_category_name = getCategoryName($pdo, $category_id);
+        if (!canEditAsset($new_category_name)) {
+            die("Error: 변경하려는 카테고리에 대한 권한이 없습니다.");
+        }
+
         try {
             $stmt = $pdo->prepare("UPDATE assets SET model_name=?, serial_number=?, category_id=?, ip_address=?, vlan_info=?, location=?, status=?, manager_name=?, introduction_date=? WHERE id=?");
             $stmt->execute([$model_name, $serial_number, $category_id, $ip_address, $vlan_info, $location, $status, $manager_name, $introduction_date, $id]);
@@ -49,6 +92,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 } elseif ($action === 'delete') {
     $id = $_GET['id'];
+
+    // Permission check
+    $category_name = getCategoryNameByAsset($pdo, $id);
+    if (!canEditAsset($category_name)) {
+        die("Error: 이 자산을 삭제할 권한이 없습니다.");
+    }
+
     try {
         $stmt = $pdo->prepare("DELETE FROM assets WHERE id = ?");
         $stmt->execute([$id]);

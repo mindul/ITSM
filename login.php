@@ -17,9 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password'])) {
-            loginUser($user);
-            header("Location: dashboard.php");
-            exit;
+            if ($user['is_approved'] == 1) {
+                loginUser($user);
+                header("Location: dashboard.php");
+                exit;
+            } else {
+                $error = "가입 승인 대기 중인 계정입니다. 관리자에게 문의하세요.";
+            }
         } else {
             $error = "아이디 또는 비밀번호가 올바르지 않습니다.";
         }

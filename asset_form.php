@@ -17,11 +17,16 @@ $asset = [
 ];
 
 if ($id > 0) {
-    $stmt = $pdo->prepare("SELECT * FROM assets WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT a.*, c.name as category_name FROM assets a JOIN categories c ON a.category_id = c.id WHERE a.id = ?");
     $stmt->execute([$id]);
     $asset = $stmt->fetch();
     if (!$asset)
         die("자산을 찾을 수 없습니다.");
+
+    // Permission check for editing
+    if (!canEditAsset($asset['category_name'])) {
+        die("이 카테고리의 자산을 수정할 권한이 없습니다.");
+    }
 }
 
 $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
@@ -57,9 +62,11 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
                     <select name="category_id" class="form-select" required>
                         <option value="">선택하세요</option>
                         <?php foreach ($categories as $cat): ?>
-                            <option value="<?php echo $cat['id']; ?>" <?php echo $asset['category_id'] == $cat['id'] ? 'selected' : ''; ?>>
-                                <?php echo h($cat['name']); ?>
-                            </option>
+                            <?php if (hasCategoryPermission($cat['name'])): ?>
+                                <option value="<?php echo $cat['id']; ?>" <?php echo $asset['category_id'] == $cat['id'] ? 'selected' : ''; ?>>
+                                    <?php echo h($cat['name']); ?>
+                                </option>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </select>
                 </div>
