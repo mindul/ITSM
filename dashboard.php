@@ -21,6 +21,42 @@ $recent_history = $pdo->query("SELECT h.*, a.model_name, a.serial_number
                                FROM history_logs h 
                                JOIN assets a ON h.asset_id = a.id 
                                ORDER BY h.created_at DESC LIMIT 5")->fetchAll();
+
+// Fetch Importance Distribution Data
+$importance_data = [];
+foreach (['서버', '네트워크장비', '정보보호시스템', '기타장비'] as $name) {
+    $id = $cat_ids[$name] ?? 0;
+    if ($id === 0) {
+        $importance_data[$name] = ['High' => 0, 'Medium' => 0, 'Low' => 0];
+        continue;
+    }
+    $stmt = $pdo->prepare("SELECT importance, COUNT(*) as cnt FROM assets WHERE category_id = ? GROUP BY importance");
+    $stmt->execute([$id]);
+    $res = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    $importance_data[$name] = [
+        'High' => $res['High'] ?? 0,
+        'Medium' => $res['Medium'] ?? 0,
+        'Low' => $res['Low'] ?? 0
+    ];
+}
+
+// Fetch Risk Distribution Data
+$risk_data = [];
+foreach (['서버', '네트워크장비', '정보보호시스템', '기타장비'] as $name) {
+    $id = $cat_ids[$name] ?? 0;
+    if ($id === 0) {
+        $risk_data[$name] = ['High' => 0, 'Medium' => 0, 'Low' => 0];
+        continue;
+    }
+    $stmt = $pdo->prepare("SELECT risk_level, COUNT(*) as cnt FROM assets WHERE category_id = ? GROUP BY risk_level");
+    $stmt->execute([$id]);
+    $res = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    $risk_data[$name] = [
+        'High' => $res['High'] ?? 0,
+        'Medium' => $res['Medium'] ?? 0,
+        'Low' => $res['Low'] ?? 0
+    ];
+}
 ?>
 
 <div class="pt-3 pb-2 mb-3 border-bottom">
@@ -145,8 +181,48 @@ $recent_history = $pdo->query("SELECT h.*, a.model_name, a.serial_number
     </div>
 </div>
 
+<!-- Importance Charts Row -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h5 class="mb-3"><i class="fas fa-exclamation-circle text-primary me-2"></i>카테고리별 자산 중요도 현황</h5>
+    </div>
+    <?php foreach (['서버', '네트워크장비', '정보보호시스템', '기타장비'] as $idx => $name): ?>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-center mb-3 small fw-bold"><?php echo h($name); ?></h6>
+                <div style="height: 180px;">
+                    <canvas id="importanceChart_<?php echo $idx; ?>"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
+
+<!-- Risk Charts Row -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h5 class="mb-3"><i class="fas fa-biohazard text-danger me-2"></i>카테고리별 위험평가 현황</h5>
+    </div>
+    <?php foreach (['서버', '네트워크장비', '정보보호시스템', '기타장비'] as $idx => $name): ?>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-center mb-3 small fw-bold"><?php echo h($name); ?></h6>
+                <div style="height: 180px;">
+                    <canvas id="riskChart_<?php echo $idx; ?>"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Asset Distribution Bar Chart
         const ctx = document.getElementById('assetChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
@@ -156,28 +232,71 @@ $recent_history = $pdo->query("SELECT h.*, a.model_name, a.serial_number
                     label: '장비별 수량',
                     data: [<?php echo $server_count; ?>, <?php echo $network_count; ?>, <?php echo $security_count; ?>, <?php echo $others_count; ?>],
                     backgroundColor: [
-                        'rgba(25, 135, 84, 0.7)',
-                        'rgba(13, 202, 240, 0.7)',
-                        'rgba(255, 193, 7, 0.7)',
-                        'rgba(108, 117, 125, 0.7)'
+                        '#198754', // 서버 (bg-success)
+                        '#0dcaf0', // 네트워크장비 (bg-info)
+                        '#ffc107', // 정보보호시스템 (bg-warning)
+                        '#6c757d'  // 기타장비 (bg-secondary)
                     ],
-                    borderColor: [
-                        'rgba(25, 135, 84, 1)',
-                        'rgba(13, 202, 240, 1)',
-                        'rgba(255, 193, 7, 1)',
-                        'rgba(108, 117, 125, 1)'
-                    ],
-                    borderWidth: 1
+                    borderWidth: 0
                 }]
             },
             options: {
                 indexAxis: 'y',
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     x: { beginAtZero: true }
                 }
             }
         });
+
+        // Helper for Pie Charts
+        const createPie = (id, data) => {
+            const ctx = document.getElementById(id).getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#dc3545', '#ffc107', '#198754'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                boxWidth: 10, 
+                                font: { size: 10 },
+                                padding: 10
+                            } 
+                        }
+                    }
+                }
+            });
+        };
+
+        // Render Importance Charts
+        <?php foreach (['서버', '네트워크장비', '정보보호시스템', '기타장비'] as $idx => $name): ?>
+        createPie('importanceChart_<?php echo $idx; ?>', [
+            <?php echo $importance_data[$name]['High']; ?>,
+            <?php echo $importance_data[$name]['Medium']; ?>,
+            <?php echo $importance_data[$name]['Low']; ?>
+        ]);
+        <?php endforeach; ?>
+
+        // Render Risk Charts
+        <?php foreach (['서버', '네트워크장비', '정보보호시스템', '기타장비'] as $idx => $name): ?>
+        createPie('riskChart_<?php echo $idx; ?>', [
+            <?php echo $risk_data[$name]['High']; ?>,
+            <?php echo $risk_data[$name]['Medium']; ?>,
+            <?php echo $risk_data[$name]['Low']; ?>
+        ]);
+        <?php endforeach; ?>
     });
 </script>
 
