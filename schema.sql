@@ -66,6 +66,6 @@ INSERT IGNORE INTO `categories` (`name`, `description`) VALUES
 ('정보보호시스템', '방화벽, IPS 등'),
 ('기타장비', '기타 IT 자산');
 
--- Default SuperAdmin (password: Fa9520!@)
+-- Default SuperAdmin (password: Fab2026$$)
 INSERT IGNORE INTO `users` (`username`, `name`, `password`, `role`, `is_approved`) VALUES 
 ('kadmin', '최고관리자', '$2y$10$C8.u6bV0x.lq9oW7Wd7m.eD6F5IuYpD.y.S6S.Y.Z.V.W.X.Y.Z.V', 'SuperAdmin', 1);
