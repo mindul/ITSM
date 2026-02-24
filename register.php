@@ -87,16 +87,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             font-weight: bold;
             margin-top: 20px;
+            transition: none;
+        }
+
+        .btn-reg:hover {
+            background: #198754 !important;
+            color: white;
         }
 
         .task-option {
             background: #f8f9fa;
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 10px 15px;
             border-radius: 8px;
             margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            min-width: 140px;
         }
 
         .task-option:hover {

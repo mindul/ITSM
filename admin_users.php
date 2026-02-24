@@ -137,6 +137,10 @@ include 'includes/header.php';
                                                 <i class="fas fa-user-check"></i> 승인
                                             </a>
                                         <?php endif; ?>
+                                        <a href="admin_user_edit.php?id=<?php echo $u['id']; ?>"
+                                            class="btn btn-outline-secondary" title="정보 수정">
+                                            <i class="fas fa-user-edit"></i>
+                                        </a>
                                         <button class="btn btn-outline-danger delete-user-btn" data-id="<?php echo $u['id']; ?>"
                                             title="계정 삭제">
                                             <i class="fas fa-user-minus"></i>
