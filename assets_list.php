@@ -140,7 +140,9 @@ $assets = $stmt->fetchAll();
                     <?php else: ?>
                         <?php foreach ($assets as $asset): ?>
                             <tr>
-                                <td><span class="badge bg-secondary"><?php echo h($asset['category_name']); ?></span></td>
+                                <td><span
+                                        class="badge <?php echo getCategoryBadge($asset['category_name']); ?>"><?php echo h($asset['category_name']); ?></span>
+                                </td>
                                 <td><strong><?php echo h($asset['model_name']); ?></strong></td>
                                 <td><?php echo h($asset['serial_number']); ?></td>
                                 <td><code><?php echo h($asset['ip_address'] ?: '-'); ?></code></td>

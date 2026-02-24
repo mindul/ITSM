@@ -36,4 +36,23 @@ function getStatusBadge($status)
             return 'bg-secondary';
     }
 }
+
+/**
+ * Get category badge class
+ */
+function getCategoryBadge($category)
+{
+    switch ($category) {
+        case '서버':
+            return 'bg-primary';
+        case '네트워크장비':
+            return 'bg-success';
+        case '정보보호시스템':
+            return 'bg-info';
+        case '기타장비':
+            return 'bg-secondary';
+        default:
+            return 'bg-secondary';
+    }
+}
 ?>

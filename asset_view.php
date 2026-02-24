@@ -58,7 +58,7 @@ $logs = $stmt->fetchAll();
                     </tr>
                     <tr>
                         <th class="bg-light">카테고리</th>
-                        <td><span class="badge bg-secondary">
+                        <td><span class="badge <?php echo getCategoryBadge($asset['category_name']); ?>">
                                 <?php echo h($asset['category_name']); ?>
                             </span></td>
                     </tr>
