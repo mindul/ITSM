@@ -3,3 +3,5 @@
 *.log
 config/db.php_backup
 .gemini/
+*.sql
+book_httpd.conf
